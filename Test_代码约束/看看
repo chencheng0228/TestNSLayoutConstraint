@@ -1,0 +1,119 @@
+ (1)介绍：NSLayoutConstraint
+  一个约束类。
+
+
+（2）通过代码来进行约束=============对应控制器viewController===============================
+ 方法—— （可视化格式语言）
+ 一般调用：constraintsWithVisualFormat:options:metrics:views:.
+
+ 法一：visual format string 可以直观的进行约束，一眼就可看明白。难点：不熟悉formatstring
+
+ EX:NSArray *constraints = nil;
+ constraints = [NSLayoutConstraint constraintsWithVisualFormat:
+ @"H:|-25-[deleteButton(==cancelButton@700)]-(>=8)-[cancelButton(140)]-[nextButton(nextButtonWidth)]-rectY-|"//水平 可视化格式语言
+ options:NSLayoutFormatAlignAllTop //对齐功能
+ metrics:@{@"rectY":@5,@"nextButtonWidth":@30}//指标参数
+ views:viewsDic];//参与约束的对象字典
+
+ [self.view addConstraints:constraints];
+
+写法规则：
+
+"方向：superView -参数-[view1]（有关view1的参数）-参数-[view2](有关view2的参数)-参数-superView"
+文档上的：(<orientation>:)?
+(<superview><connection>)?
+<view>(<connection><view>)*
+(<connection><superview>)?
+
+规则介绍：
+
+V:|-(>=XXX) :表示垂直方向上相对于SuperView大于、等于、小于某个距离
+若是要定义水平方向，则将V：改成H：即可
+在接着后面-[]中括号里面对当前的View/控件 的高度/宽度进行设定；
+options：字典类型的值；这里的值一般在系统定义的一个enum里面选取
+metrics：nil；一般为nil ，参数类型为NSDictionary，从外部传入 //衡量标准
+views：就是上面所加入到NSDictionary中的绑定的View
+在这里要注意的是 AddConstraints  和 AddConstraint 之间的区别，一个添加的参数是NSArray，一个是NSLayoutConstraint
+使用规则
+|: 表示父视图
+-:表示距离
+V:  :表示垂直
+H:  :表示水平
+>= :表示视图间距、宽度和高度必须大于或等于某个值
+<= :表示视图间距、宽度和高度必须小宇或等于某个值
+== :表示视图间距、宽度或者高度必须等于某个值
+@  :>=、<=、==  限制   最大为  1000
+1.|-[view]-|:  视图处在父视图的左右边缘内
+2.|-[view]  :   视图处在父视图的左边缘
+3.|[view]   :   视图和父视图左边对齐
+4.-[view]-  :  设置视图的宽度高度
+5.|-30.0-[view]-30.0-|:  表示离父视图 左右间距  30
+6.[view(200.0)] : 表示视图宽度为 200.0
+7.|-[view(view1)]-[view1]-| :表示视图宽度一样，并且在父视图左右边缘内
+8. V:|-[view(50.0)] : 视图高度为  50
+9: V:|-(==padding)-[imageView]->=0-[button]-(==padding)-| : 表示离父视图的距离
+为Padding,这两个视图间距必须大于或等于0并且距离底部父视图为 padding。
+10:  [wideView(>=60@700)]  :视图的宽度为至少为60 不能超过  700
+11: 如果没有声明方向默认为  水平  V:
+
+
+尽量定义一个参数字典，比如NSDictionary *views = @{
+@"topLayoutGuide": self.topLayoutGuide,
+@"imageView": self.imageView,
+@"nameLabel": self.nameLabel,
+@"conversationsLabel": self.conversationsLabel,
+@"photosLabel": self.photosLabel
+};
+这样在后期只需要在这里修改就可以了，省的到时候要改的地方会比较的多。。。。。。。。。。。。。。。。。。。。。
+
+
+
+
+方法二  =============================对应控制器viewController2==============================
+
+调用类方法：[NSLayoutConstraint constraintWithItem:(id)item
+attribute:(NSLayoutAttribute)attribute
+relatedBy:(NSLayoutRelation)relation
+toItem:(id)otherItem
+attribute:(NSLayoutAttribute)otherAttribute
+multiplier:(CGFloat)multiplier
+constant:(CGFloat)constant]
+
+缺点:感觉代码量好大哦，要是代码写那可真要命。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+
+参数介绍：
+第一个参数:指定约束左边的视图view1
+第二个参数:指定view1的属性attr1，具体属性见文末。
+第三个参数:指定左右两边的视图的关系relation，具体关系见文末。
+第四个参数:指定约束右边的视图view2
+第五个参数:指定view2的属性attr2，具体属性见文末。
+第六个参数:指定一个与view2属性相乘的乘数multiplier
+第七个参数:指定一个与view2属性相加的浮点数constant
+
+
+属性和关系的值：
+
+typedef NS_ENUM(NSInteger, NSLayoutRelation) {
+NSLayoutRelationLessThanOrEqual = -1,          //小于等于
+NSLayoutRelationEqual = 0,                     //等于
+NSLayoutRelationGreaterThanOrEqual = 1,        //大于等于
+};
+
+typedef NS_ENUM(NSInteger, NSLayoutAttribute) {
+NSLayoutAttributeLeft = 1,                     //左侧
+NSLayoutAttributeRight,                        //右侧
+NSLayoutAttributeTop,                          //上方
+NSLayoutAttributeBottom,                       //下方
+NSLayoutAttributeLeading,                      //首部
+NSLayoutAttributeTrailing,                     //尾部
+NSLayoutAttributeWidth,                        //宽度
+NSLayoutAttributeHeight,                       //高度
+NSLayoutAttributeCenterX,                      //X轴中心
+NSLayoutAttributeCenterY,                      //Y轴中心
+NSLayoutAttributeBaseline,                     //文本底标线
+
+NSLayoutAttributeNotAnAttribute = 0            //没有属性
+};
+
+
+总之，要熟悉这些约束，还需要大量的实战，光看是没有用的。。。。。。。。。。。。。。。。。。。。。。。。。
