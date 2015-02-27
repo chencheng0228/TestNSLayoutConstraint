@@ -8,6 +8,14 @@
 
 #import "ViewController2.h"
 
+//debug宏
+#ifdef DEBUG
+#   define NSSLog(fmt, ...) {NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);}
+#else
+#   define NSSLog(...)
+#endif
+
+
 @interface ViewController2 ()
 
 @end
